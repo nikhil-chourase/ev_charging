@@ -74,11 +74,12 @@ class MenuScreen extends ConsumerWidget {
                       children: [
                         Text(' ${user!.name}',style: TextStyle(
                           color: Colors.white,
-                          fontSize: 20
+                          fontSize: 16
                         ),),
                         SizedBox(height: 10,),
                         Text(' ${user!.email}',style: TextStyle(
                           color: Colors.grey.shade600,
+                          fontSize: 11,
                         ),),
                       ],
                     ),
