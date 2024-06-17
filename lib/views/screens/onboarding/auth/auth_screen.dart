@@ -222,7 +222,15 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
         
         
-                LoginButton(image: 'images/google.png', text: 'Continue with Google',),
+                GestureDetector(
+                  onTap: () {
+                     final authController =
+                          ref.read(authControllerProvider.notifier);
+                      authController.signInWithGoogle();
+                   
+
+                  },
+                  child: LoginButton(image: 'images/google.png', text: 'Continue with Google',)),
         
                 const SizedBox(height: 20,),
         

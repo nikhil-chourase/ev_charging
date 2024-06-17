@@ -10,12 +10,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:evcharging/models/user.dart' as model;
+import 'package:google_sign_in/google_sign_in.dart';
 
 
 
 
 final authControllerProvider = StateNotifierProvider<AuthController, User?>((ref) {
-
   return AuthController(ref.read);
 });
 
@@ -26,6 +26,12 @@ class AuthController extends StateNotifier<User?> {
 
 
   final Reader read;
+
+  late String email;
+  late String name;
+  late String uid;
+
+  final GoogleSignIn googleSignIn = GoogleSignIn();
 
 
   final _loginResultNotifier = ValueNotifier<bool?>(null);
@@ -145,6 +151,53 @@ class AuthController extends StateNotifier<User?> {
     }
   }
 
+   Future<void> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        showSnackbar('Error Logging in', 'Google sign-in aborted');
+         loginResultNotifier.value = false;
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      UserCredential userCredential = await firebaseAuth.signInWithCredential(credential);
+      User? user = userCredential.user;
+
+      name = user!.displayName!;
+      email = user!.email!;
+      uid = userCredential.user!.uid;
+
+      if (user != null) {
+        DocumentSnapshot snapshot = await firestore.collection('users').doc(user.uid).get();
+        if (!snapshot.exists) {
+          model.User newUser = model.User(
+            name: name,
+            email: email,
+            uid: uid,
+          );
+          await firestore
+              .collection('users')
+              .doc(user.uid)
+              .set(newUser.toJson());
+
+          loginResultNotifier.value = true;
+        }
+        showSnackbar('User successfully logged in', '');
+        _navigateToHomeScreen();
+      } else{
+        loginResultNotifier.value = false;
+      }
+    } catch (e) {
+      showSnackbar('Error Logging in', e.toString());
+      loginResultNotifier.value = false;
+    }
+  } 
  
  void signOut() async {
     await firebaseAuth.signOut();
