@@ -55,7 +55,7 @@ class AppRouter {
 
       
       default:
-        selectedPage = const AuthScreen();
+        selectedPage = const SplashScreen();
         break;
     }
     return MaterialPageRoute(builder: (context) => selectedPage);

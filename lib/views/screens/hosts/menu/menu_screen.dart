@@ -25,6 +25,7 @@ class MenuScreen extends ConsumerWidget {
 
     final size = MediaQuery.of(context).size;
 
+   
     
 
     
@@ -170,7 +171,11 @@ class MenuScreen extends ConsumerWidget {
                         const SizedBox(height: 20,),
 
 
-                         WhiteButton(text: 'Log Out', icon: Icons.exit_to_app_outlined,),
+                         InkWell(
+                          onTap: (){
+
+                          },
+                          child: WhiteButton(text: 'Log Out', icon: Icons.exit_to_app_outlined,)),
                       
 
 
